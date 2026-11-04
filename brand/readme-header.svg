@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400"><title>Quiet Home: clean up your Android TV</title>
+<rect width="1280" height="400" rx="28" fill="#262A30"/>
+<g transform="translate(177 90) scale(0.86)"><path fill="#FFD166" fill-rule="evenodd" d="M62 50 H194 a22 22 0 0 1 22 22 V144 a22 22 0 0 1 -22 22 H62 a22 22 0 0 1 -22 -22 V72 a22 22 0 0 1 22 -22 Z M128 69 Q134.5 102 168 108 Q134.5 114 128 147 Q121.5 114 88 108 Q121.5 102 128 69 Z M102 191 H154 a9 9 0 0 1 0 18 H102 a9 9 0 0 1 0 -18 Z"/></g>
+<text x="432" y="200" fill="#FFFFFF" font-family="'Helvetica Neue', Arial, sans-serif" font-size="84" font-weight="600" letter-spacing="-1.5">Quiet Home</text>
+<text x="435" y="256" fill="#B6BCC6" font-family="'Helvetica Neue', Arial, sans-serif" font-size="30">Clean up your Android TV. Keep just your apps.</text>
+</svg>

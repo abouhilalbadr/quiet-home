@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180"><title>Quiet Home TV banner</title>
+<rect width="320" height="180" fill="#262A30"/>
+<g transform="translate(18 40) scale(0.4)"><path fill="#FFD166" fill-rule="evenodd" d="M62 50 H194 a22 22 0 0 1 22 22 V144 a22 22 0 0 1 -22 22 H62 a22 22 0 0 1 -22 -22 V72 a22 22 0 0 1 22 -22 Z M128 69 Q134.5 102 168 108 Q134.5 114 128 147 Q121.5 114 88 108 Q121.5 102 128 69 Z M102 191 H154 a9 9 0 0 1 0 18 H102 a9 9 0 0 1 0 -18 Z"/></g>
+<text x="122" y="100" fill="#FFFFFF" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="600" letter-spacing="-0.3">Quiet Home</text>
+</svg>

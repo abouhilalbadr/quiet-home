@@ -1,0 +1,12 @@
+dusk.jpg and sakura.jpg were drawn for this home screen.
+The others are from Pixabay under the Pixabay Content License (free to use, no attribution required),
+resized to 1920x1080 with a dark shade behind the clock and app rows:
+moon-trees.jpg   https://pixabay.com/illustrations/ai-generated-trees-moonlight-forest-8413695/
+pagoda.jpg       https://pixabay.com/illustrations/ai-generated-laka-mountains-pagoda-8191259/
+lake-house.jpg   https://pixabay.com/illustrations/anime-mountains-scenery-manga-7822082/
+peaks.jpg        https://pixabay.com/illustrations/ai-generated-mountains-clouds-anime-8182521/
+canyon.jpg       https://pixabay.com/illustrations/ai-generated-trees-sunset-clouds-7803074/
+hiker.jpg        https://pixabay.com/illustrations/sunset-anime-minimal-nature-sky-7628294/
+red-sun.jpg      https://pixabay.com/illustrations/sunset-manga-anime-anime-wallpaper-7628289/
+boat.jpg         https://pixabay.com/illustrations/ai-generated-boat-sunset-sea-ocean-8520488/
+lanterns.jpg     https://pixabay.com/illustrations/ai-generated-anime-building-house-8205333/
