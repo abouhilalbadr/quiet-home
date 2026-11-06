@@ -48,6 +48,12 @@ final class Conf {
         return out;
     }
 
+    // A whole number; anything else gives the fallback.
+    int number(String key, int fallback) {
+        try { return Integer.parseInt(get(key, "").trim()); } catch (NumberFormatException e) { return fallback; }
+    }
+
+
     boolean yes(String key, boolean fallback) {
         String v = get(key, "").toLowerCase(Locale.ROOT);
         if (v.equals("yes") || v.equals("on") || v.equals("true")) return true;

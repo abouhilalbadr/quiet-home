@@ -84,7 +84,10 @@ public class MainActivity extends Activity {
     private String[] backgrounds = {};
     private static final String[] EDIT_ITEMS = {"Move", "Replace", "Remove from home", "Uninstall"};
     private static final String[] EDIT_ITEMS_SYSTEM = {"Move", "Replace", "Remove from home", "App info"};
-    private static final int PER_ROW = 6, MAX_INPUTS = 4;
+    private static final int MAX_INPUTS = 4;
+    // Tiles on screen in each row. Fewer than four would run into the clock.
+    private static final int MIN_PER_ROW = 4, MAX_PER_ROW = 8;
+    private int perRow = 6;
 
     // Settings shortcuts: name, label, icon. Tile keys are QUICK + name.
     private static final String QUICK = "quick:";
@@ -98,7 +101,7 @@ public class MainActivity extends Activity {
 
     // Layout is designed at 1920x1080 and scaled to the TV's real UI size by px().
     private static final int MARGIN = 96, GAP = 36, RADIUS = 22;
-    private static final int ROW1_TOP = 604, ROW_STEP = 224;
+    private static final int ROW1_TOP = 604, GRID_BOTTOM = 973, NAME_ROOM = 79;
     private static final int GRID_MIN_TOP = 400; // more rows push the grid up, but not into the clock
     private static final int ICON_TOP = 76, ICON_BUTTON = 72, ICON_SIZE = 40, ICON_GAP = 12; // level with the date
     private float scale = 1f;
@@ -141,6 +144,7 @@ public class MainActivity extends Activity {
         super.onCreate(state);
         conf = Conf.load(this);
         accent = conf.color("accent", Color.WHITE);
+        perRow = Math.max(MIN_PER_ROW, Math.min(MAX_PER_ROW, conf.number("tiles_per_row", 6)));
         backgrounds = backgroundList();
         saveConfig(getIntent());
         loadFonts();
@@ -279,7 +283,7 @@ public class MainActivity extends Activity {
             // Top up with other TV apps people installed (or updated), skipping launchers and system tools.
             Intent q = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
             for (ResolveInfo ri : pm.queryIntentActivities(q, 0)) {
-                if (out.size() >= PER_ROW) break;
+                if (out.size() >= perRow) break;
                 String p = ri.activityInfo.packageName;
                 int flags = ri.activityInfo.applicationInfo.flags;
                 boolean stockSystem = (flags & ApplicationInfo.FLAG_SYSTEM) != 0
@@ -405,15 +409,16 @@ public class MainActivity extends Activity {
 
         PackageManager pm = getPackageManager();
         int m = px(MARGIN), g = px(GAP);
-        int w = (getResources().getDisplayMetrics().widthPixels - 2 * m - g * (PER_ROW - 1)) / PER_ROW;
+        int w = (getResources().getDisplayMetrics().widthPixels - 2 * m - g * (perRow - 1)) / perRow;
         int h = w * 9 / 16;
         tileW = w;
         tileH = h;
 
         List<String> apps = appList(pm);
-        // All apps share one row, six on screen; past the edge the row slides.
-        gridTop = px(ROW1_TOP);
-        int bottomTop = gridTop + px(ROW_STEP);
+        // All apps share one row; past the edge the row slides. The bottom row keeps its place at the
+        // foot of the screen, so bigger tiles grow upward and keep room for the name under the apps.
+        int bottomTop = px(GRID_BOTTOM) - h;
+        gridTop = bottomTop - h - px(NAME_ROOM);
         ((FrameLayout.LayoutParams) moveHint.getLayoutParams()).topMargin = gridTop - px(64);
         FrameLayout.LayoutParams sp = (FrameLayout.LayoutParams) appScroller.getLayoutParams();
         sp.topMargin = gridTop - px(ROW_LIFT);
@@ -445,14 +450,14 @@ public class MainActivity extends Activity {
             last.setNextFocusRightId(last.getId());
         }
 
-        // Bottom row, in the order "bottom_row" in settings.conf lists them, six at most: play_store,
+        // Bottom row, in the order "bottom_row" in settings.conf lists them, one row at most: play_store,
         // inputs (the TV's HDMI inputs, as many as fit), settings, background and add_app. Play Store is
         // left out when it's already a top-row app, and Background when there are no pictures.
         List<String> bottom = new ArrayList<>(conf.list("bottom_row", DEFAULT_BOTTOM_ROW, true));
         if (apps.contains(PLAY_STORE) || launchIntent(pm, PLAY_STORE) == null) bottom.remove("play_store");
         if (backgrounds.length == 0) bottom.remove("background");
         List<TvInputInfo> inputs = bottom.contains("inputs") ? hdmiInputs() : new ArrayList<TvInputInfo>();
-        int room = PER_ROW - (bottom.size() - (bottom.contains("inputs") ? 1 : 0));
+        int room = perRow - (bottom.size() - (bottom.contains("inputs") ? 1 : 0));
         if (inputs.size() > Math.max(0, room)) inputs = inputs.subList(0, Math.max(0, room));
         int col = 0;
         for (String item : bottom) {
@@ -461,7 +466,7 @@ public class MainActivity extends Activity {
                     addTile(root, in.getId(), inputLabel(in), null, LineIcon.HDMI, null, m + col++ * (w + g), bottomTop, w, h);
                 continue;
             }
-            if (col >= PER_ROW) break;
+            if (col >= perRow) break;
             int x = m + col * (w + g);
             switch (item) {
                 case "play_store": addTile(root, PLAY_STORE, "Play Store", null, LineIcon.PLAY, null, x, bottomTop, w, h); break;
@@ -500,6 +505,8 @@ public class MainActivity extends Activity {
     private void addTile(ViewGroup parent, final String key, String label, Drawable banner, int[] lineIcon, Drawable appIcon,
                          int x, int y, int w, int h) {
         FrameLayout card = new FrameLayout(this);
+        // Icons and names grow with the tile; six per row is the design size.
+        final float grow = 6f / perRow;
         final GradientDrawable bg = new GradientDrawable();
         bg.setCornerRadius(px(RADIUS));
         if (banner != null) {
@@ -515,18 +522,18 @@ public class MainActivity extends Activity {
             inner.setOrientation(LinearLayout.VERTICAL);
             inner.setGravity(Gravity.CENTER);
             ImageView iv = new ImageView(this);
-            int size = lineIcon != null ? px(44) : px(64);
+            int size = Math.round((lineIcon != null ? px(44) : px(64)) * grow);
             if (lineIcon != null) iv.setImageDrawable(new LineIcon(lineIcon));
             else if (appIcon != null) iv.setImageDrawable(fit(appIcon, size, size));
             inner.addView(iv, new LinearLayout.LayoutParams(size, size));
-            TextView t = text(px(24), 0xE0FFFFFF, regular);
+            TextView t = text(Math.round(px(24) * grow), 0xE0FFFFFF, regular);
             t.setText(label);
             t.setSingleLine(true);
             t.setEllipsize(android.text.TextUtils.TruncateAt.END);
             t.setGravity(Gravity.CENTER);
             t.setPadding(px(16), 0, px(16), 0);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
-            lp.topMargin = px(12);
+            lp.topMargin = Math.round(px(12) * grow);
             inner.addView(t, lp);
             card.addView(inner, new FrameLayout.LayoutParams(-1, -1));
         }
@@ -536,7 +543,7 @@ public class MainActivity extends Activity {
         card.setTag(key);
 
         // Banner tiles show their name underneath when focused.
-        final TextView caption = banner == null ? null : text(px(24), Color.WHITE, regular);
+        final TextView caption = banner == null ? null : text(Math.round(px(24) * grow), Color.WHITE, regular);
         if (caption != null) {
             caption.setText(label);
             caption.setGravity(Gravity.CENTER_HORIZONTAL);
