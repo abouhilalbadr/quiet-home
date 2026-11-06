@@ -86,6 +86,7 @@ Or let your agent do it. Paste any of these into Claude Code or Codex, inside yo
 | Change the colour | *"Set the accent in settings.conf to Quiet Home's yellow, rebuild and reinstall."* |
 | Change the clock | *"Show a 24-hour clock and a short date like Tue 4 Nov. Update settings.conf, rebuild and reinstall."* |
 | Add shortcuts | *"Add Bluetooth and Sound shortcuts next to the clock in settings.conf, rebuild and reinstall."* |
+| Make the tiles bigger | *"Set tiles_per_row to 4 in settings.conf, rebuild and reinstall."* |
 | Change the bottom row | *"Take Play Store and Background off the bottom row in settings.conf, rebuild and reinstall."* |
 | Rename the app | *"Call the home screen 'Living Room' in settings.conf, rebuild and reinstall."* |
 | Something the file doesn't cover | *"Read src/com/abouhilalbadr/quiethome/MainActivity.java and change <what you want>. Keep it working on every TV, then rebuild, reinstall and show me a screenshot from the TV."* |
@@ -99,8 +100,9 @@ Or let your agent do it. Paste any of these into Claude Code or Codex, inside yo
 | `name` | The app's name on the TV | `Quiet Home` |
 | `app_id` | The app's ID. Keep it so updates replace the app; change it to install a second copy | `com.abouhilalbadr.quiethome` |
 | `apps` | Top-row apps, by package name, in order | `com.netflix.ninja, com.google.android.youtube.tv` |
-| `add_other_apps` | `yes`: fill the row up to six with other installed TV apps. `no`: only your list | `yes` |
+| `add_other_apps` | `yes`: fill the row with other installed TV apps. `no`: only your list | `yes` |
 | `bottom_row` | Bottom-row tiles in order: `play_store`, `inputs`, `settings`, `background`, `add_app` | `inputs, settings, add_app` |
+| `tiles_per_row` | Tiles in each row, `4` (biggest) to `8` (smallest). Apps past that slide in from the side | `4` |
 | `shortcuts` | Icons by the clock: `bluetooth`, `sound`, `picture` | `bluetooth, sound` |
 | `network_icon` | Show the Wi-Fi / Ethernet icon by the clock | `yes` |
 | `clock` | `auto`, `12h`, `24h` or `off` | `24h` |
