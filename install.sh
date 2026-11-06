@@ -82,6 +82,7 @@ LAUNCHERS="com.google.android.tvlauncher com.google.android.apps.tv.launcherx co
 
 # Only known launchers get turned off. Settings, setup and System UI also answer Home, and
 # the TV needs them to start, so they, unknown apps and anything always running stay on.
+# (Google TV's setup helper is the one exception, handled below.)
 is_launcher() {
   case "$1" in
     "$APP"|com.android.settings|com.android.tv.settings|com.android.systemui|com.android.provision) return 1 ;;
@@ -125,6 +126,45 @@ if ! is_me; then
     esac
   fi
 fi
+
+# Google TV: with its launcher off, the setup helper answers Home ahead of every other app,
+# because system apps can outrank the rest, and it brings the launcher back. So on Google TV
+# alone it has to go off too. Anywhere else, setup apps stay on.
+HELPER=com.google.android.tungsten.setupwraith
+LAUNCHER=com.google.android.apps.tv.launcherx
+case "$(current_home)" in
+  "$HELPER"/*)
+    echo "Google TV's setup helper now answers the Home button: $HELPER"
+    answer=${YES:+y}
+    if [ -z "$answer" ]; then
+      printf "Turn it off too, so Home opens your new home screen? You can undo this with undo.sh. [y/N] "
+      read answer </dev/tty || answer=n
+    fi
+    case "$answer" in
+      y|Y|yes)
+        # Noted before the change: the connection can drop right after it.
+        sh_tv "echo $HELPER >> $DISABLED"
+        sh_tv pm disable-user --user 0 "$HELPER" >/dev/null
+        echo "Saving the change on the TV, this takes 15 seconds…"
+        sleep 15
+        tries=0
+        until [ "$(adb -s "$TV" get-state 2>/dev/null)" = device ] || [ "$tries" -ge 24 ]; do
+          [ "$tries" -eq 0 ] && echo "The TV dropped its connection. Waiting up to 2 minutes for it…"
+          tries=$((tries + 1)); sleep 5
+          case "$TV" in *:*) adb connect "$TV" >/dev/null 2>&1 || true ;; esac
+        done
+        if [ "$(adb -s "$TV" get-state 2>/dev/null)" != device ]; then
+          echo "The TV hasn't reconnected yet. It usually comes back by itself. Press Home on the remote, then run: sh check.sh $TARGET --fix" >&2
+          exit 1
+        fi
+        sh_tv cmd role add-role-holder --user 0 android.app.role.HOME "$APP" >/dev/null 2>&1 || true
+        sh_tv cmd package set-home-activity "$ME" >/dev/null 2>&1 || true ;;
+      *)
+        echo "Left it on and turned Google TV's own home screen back on."
+        sh_tv pm enable "$LAUNCHER" >/dev/null
+        sh_tv "sed -i /$LAUNCHER/d $DISABLED" ;;
+    esac ;;
+esac
 
 adb -s "$TV" shell input keyevent KEYCODE_HOME
 if is_me; then
