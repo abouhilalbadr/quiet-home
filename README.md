@@ -52,7 +52,9 @@ My TV is a <brand and model>.
    https://github.com/abouhilalbadr/quiet-home and read its
    README. Put these apps in settings.conf: <your apps>.
    Install Java 17 and the Android SDK if they're missing,
-   then run build.sh and install.sh with my TV.
+   then run build.sh and install.sh with my TV. On Google TV
+   it also offers to turn off Google's setup helper; that's
+   the one setup app that's safe to turn off, and only there.
 6. Turn off animations and the screensaver, and make the TV
    sleep after 5 minutes.
 7. Wait 30 seconds after the last change, then restart the
@@ -155,7 +157,9 @@ Menus differ a bit by brand. If you're stuck, ask your agent: *"I have a \<brand
 <summary><b>Which TVs does it work on?</b></summary>
 <br>
 
-Every change is tested automatically on Android TV 9 and 11 emulators, and it's used every day on a TCL Android TV 11. The original TV Detox was also tested on Android TV 12 and Google TV 14.
+Every change is tested automatically on Android TV 9 and 11 emulators, and it's used every day on a TCL Android TV 11. It also runs on a Xiaomi TV Stick HD (2nd Gen, Google TV on Android 14). The original TV Detox was also tested on Android TV 12 and Google TV 14.
+
+Google TV: `install.sh` also turns off Google's setup helper, because it takes over the Home button once the Google TV home screen is off. `undo.sh` turns both back on. The TV can drop off the network for a few minutes after this change, then comes back by itself.
 
 Fire TV: the cleanup works, but Amazon blocks changing the home screen. Roku, Samsung (Tizen) and LG (webOS) don't run Android, so it can't connect to them.
 
